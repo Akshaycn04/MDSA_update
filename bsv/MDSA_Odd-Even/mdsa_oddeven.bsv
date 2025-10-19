@@ -16,14 +16,12 @@ module mk_mdsa_oddeven(Ifc_mdsa_oddeven);
     Reg#(UInt#(8)) rg_wait_counter <- mkReg(0);
     Reg#(MDSA_64) v_rg_mdsa_data <- mkReg(unpack(0));
 
-    // Vector of 8 sorting network interfaces
     Vector#(8, Ifc_sorting_network) oddeven_sorters <- replicateM(mk_sorting_network());
 
     /*------------------ PHASE 1: Column Sorting (All Descending/Normal) ----------------*/
     rule rl_phase1_input(rg_mdsa_fsm == STAGE_1_IN);
         $display("[%0d] [MDSA] PHASE 1: Column Sorting (All Descending)", $time);
         
-        // Send each column to a sorter
         for (Integer i = 0; i < 8; i = i + 1) begin
             Vector#(8, Bit#(WordLength)) column = newVector();
             for (Integer j = 0; j < 8; j = j + 1) begin
@@ -44,8 +42,7 @@ module mk_mdsa_oddeven(Ifc_mdsa_oddeven);
         
         if (all_ready && rg_wait_counter >= 20) begin
             MDSA_64 phase1_output = newVector();
-            
-            // Collect sorted columns (all in descending order)
+
             for (Integer i = 0; i < 8; i = i + 1) begin
                 Vector#(8, Bit#(WordLength)) sorted_column = oddeven_sorters[i].mv_get_sorted_data();
                 for (Integer j = 0; j < 8; j = j + 1) begin
@@ -65,7 +62,6 @@ module mk_mdsa_oddeven(Ifc_mdsa_oddeven);
     rule rl_phase2_input(rg_mdsa_fsm == STAGE_2_IN);
         $display("[%0d] [MDSA] PHASE 2: Row Sorting (Even rows=Reverse, Odd rows=Normal)", $time);
         
-        // Send each row to a sorter
         for (Integer i = 0; i < 8; i = i + 1) begin
             oddeven_sorters[i].ma_put_data(v_rg_mdsa_data[i]);
         end
@@ -85,14 +81,9 @@ module mk_mdsa_oddeven(Ifc_mdsa_oddeven);
             
             for (Integer i = 0; i < 8; i = i + 1) begin
                 Vector#(8, Bit#(WordLength)) sorted_row = oddeven_sorters[i].mv_get_sorted_data();
-                
-                // Paper's "Even networks" (rows 2,4,6,8) = indices 1,3,5,7 => Reverse sorting (ascending)
-                // Paper's "Odd networks" (rows 1,3,5,7) = indices 0,2,4,6 => Normal sorting (descending)
                 if (i % 2 == 1) begin
-                    // Even rows in paper (indices 1,3,5,7): Reverse sorting
                     phase2_output[i] = reverse(sorted_row);
                 end else begin
-                    // Odd rows in paper (indices 0,2,4,6): Normal sorting
                     phase2_output[i] = sorted_row;
                 end
             end
@@ -170,13 +161,9 @@ module mk_mdsa_oddeven(Ifc_mdsa_oddeven);
             for (Integer i = 0; i < 8; i = i + 1) begin
                 Vector#(8, Bit#(WordLength)) sorted_row = oddeven_sorters[i].mv_get_sorted_data();
                 
-                // Paper's "Odd networks" (rows 1,3,5,7) = indices 0,2,4,6 => Reverse sorting (ascending)
-                // Paper's "Even networks" (rows 2,4,6,8) = indices 1,3,5,7 => Normal sorting (descending)
                 if (i % 2 == 0) begin
-                    // Odd rows in paper (indices 0,2,4,6): Reverse sorting
                     phase4_output[i] = reverse(sorted_row);
                 end else begin
-                    // Even rows in paper (indices 1,3,5,7): Normal sorting
                     phase4_output[i] = sorted_row;
                 end
             end
@@ -250,7 +237,6 @@ module mk_mdsa_oddeven(Ifc_mdsa_oddeven);
         if (all_ready && rg_wait_counter >= 20) begin
             MDSA_64 final_output = newVector();
             
-            // All rows in normal/descending sorting
             for (Integer i = 0; i < 8; i = i + 1) begin
                 final_output[i] = oddeven_sorters[i].mv_get_sorted_data();
             end
@@ -263,7 +249,7 @@ module mk_mdsa_oddeven(Ifc_mdsa_oddeven);
         end
     endrule
 
-    // Interface methods
+
     method Action ma_input_mdsa (MDSA_64 mdsa_in) if (rg_mdsa_fsm == IDLE);
         v_rg_mdsa_data <= mdsa_in;
         rg_mdsa_fsm <= STAGE_1_IN;
