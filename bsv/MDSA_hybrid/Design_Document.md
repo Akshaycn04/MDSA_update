@@ -1,7 +1,7 @@
 MDSA Hybrid Sorter design document
 
 1) Overview:
-This document outlines the implementation of Multi-Dimensional Sorting Array (MDSA) based on the hybrid sorting algorithm as mentioned in the paper “Design of Hybrid Sorting Unit” by Harshini V S and Senthil Kumar K K using Bluespec SystemVerilog (BSV). It also looks at implementing the pipelined version of the sorter to improve the speed.
+This document outlines the implementation of Multi-Dimensional Sorting Array (MDSA) based on the hybrid sorting algorithm as mentioned in the paper “Design of Hybrid Sorting Unit” by Harshini V S and Senthil Kumar K K using Bluespec SystemVerilog (BSV).
 
 2) Hybrid Sorting:
 The widely used hardware sorting algorithms in VLSI are Bitonic merge sort and Bitonic odd even sort with 24 and 19 comparator units. While looking at ways to reduce the number of comparators used for sorting, the authors came up with the hybrid sorting algorithm. It makes use of 23 comparators to sort 8 inputs. 
@@ -17,8 +17,5 @@ d) MDSA top module: The top module is the glue,it instantiates, connects, and se
 Start off with implementing the CAE block in BSV and use it to implement the sorting network. The first two stages will be similar to that of Bitonic merge and Odd-Even sorter. The subsequent stages are then designed as done in the paper. By doing this our sorter unit will be done. Now we can implement the MDSA FSM and finish the implementation after designing the top module. Verification of the design will be done by building a comprehensive testbench. 
 After the base implementation is done, we can look at pipelining the design to increase the speed. 
 
-5) Scope for Improvement:
-The proposed hybrid sorter consumes less power than bitonic merge but it is slower. Thus, to improve the speed of the design a pipelined architecture has been proposed which triples the speed of the design. High speed is achieved by introducing three stages of pipelining and provides better performance than existing one when the bit width of input increases.
-
-6) Summary
-This document details a Bluespec SystemVerilog implementation of the 64-input Hybrid Sorter. It explains the underlying hybrid sorting algorithm, describes each required module, and outlines the control FSM. Finally, it highlights how three-stage pipelining can further boost speed.
+5) Summary
+This document details a Bluespec SystemVerilog implementation of the 64-input Hybrid Sorter. It explains the underlying hybrid sorting algorithm, describes each required module, and outlines the control FSM.
