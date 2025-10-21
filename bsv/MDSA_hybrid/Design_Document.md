@@ -9,7 +9,7 @@ The first two stages of sorting are the same as sorting 4 inputs by splitting 8 
 
 3) Modules required to implement the algorithm:
 a) Compare and Exchange (CAE) block: is a fundamental building block of Systolic Array based Parallel Hardware Sorters which sorts two inputs to an ascending order output.
-b) Sorting Units: As mentioned in the paper, the first stage uses OE-2 input sorter, the second stage uses OE-4 input sorter and the subsequent stages use the OE-8 sorter unit. I think that we can also use BM-2, BM-4 and BM-8 units to implement the hybrid sorting network if we are planning to scale beyond 8 inputs since it scales better than OE units as per my understanding. If we plan to optimize the area then OE units will be better than BM units.
+b) Sorting method: 8 stages of multiple CAEs each were used to build the sorting network, first two stages are similar to Odd-Even sorter, the difference being it takes only 23 CAE blocks. 
 c) MDSA FSM: The control unit is a finite state machine (FSM) that starts in a ‘WAIT’ state and responds to the ‘START’ pulse to begin sorting through six pipeline phases. Each phase is synchronized using a delay counter and guided by a ‘DIRECTION’ signal that alternates between ascending and descending orders. After six phases, the FSM raises the ‘output_enable’ signal to indicate valid sorted output. It then resets to ‘WAIT’ and signals ‘READY’ for the next input sequence.
 d) MDSA top module: The top module is the glue,it instantiates, connects, and sequences the sorter units and control logic, interfaces with the outside world, and ensures correct functionality and timing across all stages.
 
