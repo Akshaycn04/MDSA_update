@@ -16,6 +16,7 @@ This document outlines the Bluespec SystemVerilog (BSV) implementation of a Mult
 - Contains eight parallel instances of the OEN module for row or column-wise sorting.
 - Manages data transposition between stages to alternate row and column sorting.
 - Includes feedback mechanisms for iterative processing across multiple phases.
+
 2.4 MDSA FSM (Finite State Machine)
 - Controls the sorting sequence through a six-phase process.
 - Drives direction control signals and synchronizes matrix transpositions.
@@ -28,6 +29,7 @@ This document outlines the Bluespec SystemVerilog (BSV) implementation of a Mult
 3. BSV Implementation Approach
 The implementation starts by defining fixed-width data types and FSM states to ensure clarity and type safety. The Compare-and-Swap (CAS) unit is designed as a pipelined, reusable module with registered outputs. These CAS units are connected to form the Odd-Even Network (OEN), which handles sorting for each row or column using rule-based logic.
 The sorter module uses multiple OENs in parallel and manages matrix transposition with BSV’s functional tools like map and transpose. Registers and rules control the feedback between sorting phases. An FSM manages the overall sorting flow using counters and conditions. At the top level, all modules are integrated with a clean interface, supporting modularity and efficient hardware generation.
+
 4. Implementation Considerations
 -  Rule-Based Parallelism
 BSV's rule-driven model naturally supports concurrent operations, making it ideal for expressing parallel sorting stages. Each compare-and-swap operation is atomic, allowing multiple units to operate simultaneously without manual scheduling.
@@ -35,5 +37,6 @@ BSV's rule-driven model naturally supports concurrent operations, making it idea
 BSV's strong static typing ensures safer hardware composition and easier reuse. The MDSA design is broken into cleanly defined modules (CAS, OEN, Sorter, FSM), improving readability and reducing design errors.
 -  Efficient Hardware Mapping
 The design optimizes pipeline depth, parallelism, and synchronization—resulting in high throughput while maintaining correctness. Functional constructs simplify data transposition and configuration, contributing to both performance and clarity.
+
 5. Summary
 The BSV implementation of the MDSA Odd-Even sorter offers a modular, parallel, and type-safe architecture that improves upon traditional Verilog-based approaches. By utilizing BSV’s rule-driven semantics and functional abstraction, the design achieves enhanced maintainability and clarity while ensuring performance parity with its RTL counterpart.
